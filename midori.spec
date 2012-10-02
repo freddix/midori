@@ -27,6 +27,10 @@ BuildRequires:	xorg-libXScrnSaver-devel
 Requires(post,postun):	/usr/bin/gtk-update-icon-cache
 Requires(post,postun):	hicolor-icon-theme
 Requires:	glib-networking
+# HTML5 h264 playback
+Suggests:	gstreamer-ffmpeg
+Suggests:	gstreamer-plugins-bad
+Suggests:	gstreamer-plugins-good
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
