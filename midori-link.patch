@@ -1,0 +1,12 @@
+diff -aurN midori-0.5.6.orig/midori/CMakeLists.txt midori-0.5.6/midori/CMakeLists.txt
+--- midori-0.5.6.orig/midori/CMakeLists.txt	2013-11-21 14:21:44.035113573 +0100
++++ midori-0.5.6/midori/CMakeLists.txt	2013-11-21 14:23:57.344235479 +0100
+@@ -30,7 +30,7 @@
+ target_link_libraries("${LIBMIDORI}-vala"
+                       ${DEPS_LIBRARIES}
+                       ${OPTS_LIBRARIES}
+-                      ${DEPS_GTK_LIBRARIES}
++                      ${DEPS_GTK_LIBRARIES} -lm
+                       )
+ set_target_properties("${LIBMIDORI}-vala" PROPERTIES
+                       COMPILE_FLAGS "${VALA_CFLAGS}"

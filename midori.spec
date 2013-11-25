@@ -2,12 +2,14 @@
 
 Summary:	Web browser based on GTK+ WebCore
 Name:		midori
-Version:	0.5.5
+Version:	0.5.6
 Release:	1
 License:	GPL v2+
 Group:		X11/Applications/Networking
 Source0:	http://www.midori-browser.org/downloads/%{name}_%{version}_all_.tar.bz2
-# Source0-md5:	b99e87d4b73a4732ed1c1e591f0242ac
+# Source0-md5:	62ee86eb103b74efe71d40e343120a3c
+Patch0:		%{name}-link.patch
+Patch1:		%{name}-certs.patch
 URL:		http://www.midori-browser.org/
 %if %{with gtk3}
 BuildRequires:	gtk+3-devel
@@ -26,6 +28,7 @@ BuildRequires:	sqlite3-devel
 BuildRequires:	xorg-libXScrnSaver-devel
 Requires(post,postun):	/usr/bin/gtk-update-icon-cache
 Requires(post,postun):	hicolor-icon-theme
+Requires(post,postun):	ldconfig
 Requires:	glib-networking
 # HTML5 h264 playback
 Suggests:	gstreamer-ffmpeg
@@ -40,36 +43,23 @@ XBEL, searchbox based on OpenSearch, and user scripts support.
 
 %prep
 %setup -q
-
-sed -i -e 's| -O0 -g||g' wscript
-sed -i -e 's|/etc/ssl/|/etc/|g' midori/main.c
+%patch0 -p1
+%patch1 -p1
 
 %build
-export CC="%{__cc}"
-export CFLAGS="%{rpmcflags}"
-export LINKFLAGS="%{rpmldflags}"
-export PREFIX="%{_prefix}"
-./waf configure	\
-%if %{with gtk3}
-	--enable-gtk3		\
-%endif
-	--datadir=%{_datadir} 	\
-	--docdir=%{_docdir}	\
-	--libdir=%{_libdir}
-./waf build
+install -d build
+cd build
+%cmake ..
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-export CC="%{__cc}"
-export CFLAGS="%{rpmcflags}"
-export LINKFLAGS="%{rpmldflags}"
-export PREFIX="%{_prefix}"
 
-./waf install \
-	--destdir=$RPM_BUILD_ROOT 	\
+%{__make} -C build install \
+	DESTDIR=$RPM_BUILD_ROOT
 
-rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}
-rm -rf $RPM_BUILD_ROOT%{_datadir}/locale/no
+%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/locale/no
 
 %find_lang %{name}
 
@@ -77,9 +67,11 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/locale/no
 rm -rf $RPM_BUILD_ROOT
 
 %post
+/usr/sbin/ldconfig
 %update_icon_cache hicolor
 
 %postun
+/usr/sbin/ldconfig
 %update_icon_cache hicolor
 
 %files -f %{name}.lang
@@ -92,7 +84,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/xdg/midori/extensions/adblock
 
 %attr(755,root,root) %{_bindir}/%{name}
+%attr(755,root,root) %ghost %{_libdir}/libmidori-core.so.1
+%attr(755,root,root) %{_libdir}/libmidori-core.so.*.*.*
 %attr(755,root,root) %{_libdir}/%{name}/*.so
+
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/xdg/midori/search
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/xdg/midori/extensions/adblock/config
 %{_datadir}/%{name}
