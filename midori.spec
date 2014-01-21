@@ -2,12 +2,12 @@
 
 Summary:	Web browser based on GTK+ WebCore
 Name:		midori
-Version:	0.5.6
+Version:	0.5.7
 Release:	1
 License:	GPL v2+
 Group:		X11/Applications/Networking
 Source0:	http://www.midori-browser.org/downloads/%{name}_%{version}_all_.tar.bz2
-# Source0-md5:	62ee86eb103b74efe71d40e343120a3c
+# Source0-md5:	93ceaa9b3b4a65f2a2738293440a8bf5
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-certs.patch
 URL:		http://www.midori-browser.org/
